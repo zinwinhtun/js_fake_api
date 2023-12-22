@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>shopping api</title>
+    <style>
+*{
+            margin: 0;
+            padding: 0;
+        }
+
+        .page{
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .table{
+            text-align: left;
+            width: 70%;
+            border-collapse: collapse;
+        }
+
+        .table thead{
+            background-color: #102bc5;
+            color: white;
+        }
+
+        .table tr, .table th, .table td{
+            padding: 10px 15px;
+        } 
+
+        .table tbody tr:nth-child(even){
+            background-color: #e1e4e660;
+        }
+
+        .table tbody tr:hover{
+            background-color: #e1e4e6;
+        }
+
+        .api-img{
+            width: 80px;
+        }
+        
+        tbody tr {
+            height: 200px;
+        }
+
+        .card{
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .card-body {
+            width: 60%;
+            display: flex;
+            box-shadow: 1px 1px 10px #d3d1d1;
+            padding: 5px;
+            align-items: center;
+        }
+
+        .card-body img {
+            width: 200px;
+        }
+
+        .info{
+            padding-left: 30px;
+            line-height: 2rem;
+        }
+
+    </style>
+    
+</head>
+<body>
+    <div class="card" id="card">
+    </div>
+    <div class="page">
+        <table class="table" >
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Prices</th>
+                    <th>Rating</th>
+                    <th>Image</th>
+                </tr>
+            </thead>
+            <tbody id="page"></tbody>
+        </table>
+    </div>
+</body>
+<script>
+    // tdody ကို id နဲ့ဖမ်းထားမယ်
+    let page = document.getElementById('page');
+    let list = "" ; // list variable  // =" " empty string
+
+    //card display none 
+
+    let card = document.getElementById("card");
+
+    card.style.display = "none";
+
+    fetch ('https://fakestoreapi.com/products')
+    .then((Response)=> Response.json()) // json format ပြောင်းမယ် 
+    // ရလာတဲ့ data ကို result ထုတ်မယ် 
+    .then((result) => {
+        // console.log(result);
+
+        // for looping ပတ်ပြီး api ထည်းက list တွေကို ui ပြောင်းမယ်
+
+        // += က list override မဖြစ်အောင်ထုတ်ပေးမယ်
+        for( let i = 0 ; i < result.length; i++){
+            // onclick နဲ့ ID ပြန်ထုတ်တယ်
+            list += `
+            <tr onclick="detail(${result[i].id})"> 
+                <td>${result[i].id}</td>
+                <td>${result[i].title}</td>
+                <td>${result[i].price}</td>
+                <td>${result[i].rating.rate}</td>
+                <td>
+                    <a href = "${result[i].image}" target = "_blink"><img src="${result[i].image}"/ class="api-img"></a>
+                </td>
+            </tr> `;
+        }
+        page.innerHTML=list; // page ထည်းက data ကို innerHTML နဲ့ list ထည်းထည့်ပြီး output ထုတ်မယ်
+
+    });
+    // detail ထည်းက id ကိုသူံးပြီး card box ပြန်ထုတ်တယ်
+    // id က looping လုပ်စရာမလိုသောကြောင့်တခါထည်းပြန်သုံးလို့ရတယ် 
+    function detail(id){
+            fetch ('https://fakestoreapi.com/products/' + id ) //api link မှာ id ထပ်ပေါင်းပေးတယ်
+                .then((Response)=> Response.json())
+                // data function ထည်းမှာ html code တွေထည့်ပြီး card box ကို api ထည်းကလိုချင်တဲ့ data တွေထည့်တယ်
+                .then((data)=>{
+                card.innerHTML=`
+                <div class="card" id="card">
+                    <div class="card-body">
+                        <img src="${data.image}" alt="">
+                        <div class="info">
+                            <h3>${data.title}</h3>
+                            <h4>${data.price} $ </h4>
+                            <h4>${data.rating.rate} </h4>
+                        </div>
+                    </div> 
+                </div>   
+                `;
+                card.style.display = "block"; // display block နဲ့ ui ပြန်ထုတ်တယ်
+                });
+
+                
+        };
+
+</script>
+</html>
